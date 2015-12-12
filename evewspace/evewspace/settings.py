@@ -46,16 +46,16 @@ CELERYBEAT_SCHEDULE = {
                 'schedule': timedelta(minutes=5),
                 'args': ()
             },
-        'cache_reddit':{
-                'task': 'core.tasks.cache_eve_reddit',
-                'schedule': timedelta(minutes=45),
-                'args': ()
-            },
-        'cache_feeds':{
-                'task': 'core.tasks.update_feeds',
-                'schedule': timedelta(minutes=30),
-                'args': ()
-            },
+#        'cache_reddit':{
+#                'task': 'core.tasks.cache_eve_reddit',
+#                'schedule': timedelta(minutes=45),
+#                'args': ()
+#            },
+#        'cache_feeds':{
+#                'task': 'core.tasks.update_feeds',
+#                'schedule': timedelta(minutes=30),
+#                'args': ()
+#            },
         'char_data':{
                 'task': 'API.tasks.update_char_data',
                 'schedule': timedelta(hours=1),

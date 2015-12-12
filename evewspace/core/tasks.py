@@ -123,7 +123,7 @@ def update_all_alliances():
         update_alliance(alliance.allianceID)
 
 
-@task()
+#@task()
 def cache_eve_reddit():
     """
     Attempts to cache the top submissions to r/Eve.
@@ -143,7 +143,7 @@ def cache_eve_reddit():
             # Invalid response, refresh current data
             cache.set('reddit', current, 120)
 
-@task
+#@task
 def update_feeds():
     """
     Caches and updates RSS feeds in NewsFeeds.
