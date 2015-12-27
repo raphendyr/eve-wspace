@@ -15,7 +15,10 @@ class SlackAlertMethod(AlertMethodBase):
 
         if self.exists(sub_group):
             channel = SlackChannel.objects.get(group=sub_group)
-            destination = "https://%s.slack.com/services/hooks/incoming-webhook?token=%s" % (subdomain, channel.token)
+            if "/" in channel.token:
+                destination = "https://hooks.slack.com/services/%s" % (channel.token,)
+            else:
+                destination = "https://%s.slack.com/services/hooks/incoming-webhook?token=%s" % (subdomain, channel.token)
             payload = {'payload':json.dumps({'channel': channel.channel,
                 'username': "EVE W-Space",
                 'attachments':[{
@@ -28,7 +31,7 @@ class SlackAlertMethod(AlertMethodBase):
                 }]
             })}
             r = requests.post(destination, data=payload)
-            return {'status_code': r.status_code, 'text': r.text}
+            return {'url': destination, 'status_code': r.status_code, 'text': r.text}
 
     def exists(self, group):
         """
