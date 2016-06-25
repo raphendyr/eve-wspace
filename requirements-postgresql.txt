@@ -13,7 +13,7 @@ git+https://github.com/marbindrakon/django-eveigb
 django-infinite-memcached==0.1
 eveapi==1.2.6
 feedparser==5.1.3
-kombu==3.0.24
+kombu==3.0.35
 networkx==1.9.1
 python-dateutil==2.3
 python-memcached==1.53

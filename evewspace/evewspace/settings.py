@@ -1,3 +1,8 @@
+import django.conf.global_settings as DEFAULT_SETTINGS
+import logging
+
+from datetime import timedelta
+from celery.schedules import crontab
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
@@ -13,8 +18,6 @@ djcelery.setup_loader()
 
 BROKER_URL = 'amqp://guest:guest@localhost:5672/'
 ALLOWED_HOSTS = ['*',]
-from datetime import timedelta
-from celery.schedules import crontab
 CELERYBEAT_SCHEDULE = {
         'map_stats':{
                 'task': 'Map.tasks.update_system_stats',
@@ -186,6 +189,9 @@ INSTALLED_APPS = (
         'django.contrib.humanize',
         # Uncomment the next line to enable the admin:
         #'django.contrib.admin',
+        # 3rd party libs
+        'social.apps.django_app.default',
+        # local apps
         'core',
         'Map',
         'POS',
@@ -204,12 +210,35 @@ INSTALLED_APPS = (
 #Require a registration code to register
 ACCOUNT_REQUIRE_REG_CODE=True
 
-import django.conf.global_settings as DEFAULT_SETTINGS
-TEMPLATE_CONTEXT_PROCESSORS = DEFAULT_SETTINGS.TEMPLATE_CONTEXT_PROCESSORS + ('core.context_processors.site', 'eveigb.context_processors.igb',)
+TEMPLATE_CONTEXT_PROCESSORS = DEFAULT_SETTINGS.TEMPLATE_CONTEXT_PROCESSORS + (
+    'core.context_processors.site',
+    'eveigb.context_processors.igb',
+    'social.apps.django_app.context_processors.backends',
+)
+
+AUTHENTICATION_BACKENDS = (
+    'social.backends.eveonline.EVEOnlineOAuth2',
+)
+
+SOCIAL_AUTH_PIPELINE = (
+    'social.pipeline.social_auth.social_details',
+    'social.pipeline.social_auth.social_uid',
+    'social.pipeline.social_auth.auth_allowed',
+    'social.pipeline.social_auth.social_user',
+    'social.pipeline.user.get_username',
+    'social.pipeline.user.create_user',
+    'social.pipeline.social_auth.associate_user',
+    'social.pipeline.debug.debug',
+    'social.pipeline.social_auth.load_extra_data',
+    'social.pipeline.user.user_details',
+    'social.pipeline.debug.debug'
+)
+
+#SOCIAL_AUTH_EVEONLINE_SCOPE = ['publicData']
+SOCIAL_AUTH_CLEAN_USERNAMES = False
+
+
 # ejabberd auth gateway log settings
-
-import logging
-
 TUNNEL_EJABBERD_AUTH_GATEWAY_LOG = '/tmp/ejabberd.log'
 TUNNEL_EJABBERD_AUTH_GATEWAY_LOG_LEVEL = logging.DEBUG
 

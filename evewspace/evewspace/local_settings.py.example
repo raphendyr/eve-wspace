@@ -7,6 +7,11 @@ DEBUG = True
 
 SECRET_KEY = 'alan_please_add_secret_key'
 
+# get eve sso applocation keys from
+# https://developers.eveonline.com/applications/
+SOCIAL_AUTH_EVEONLINE_KEY = ''
+SOCIAL_AUTH_EVEONLINE_SECRET = ''
+
 # Set this to the directory you are service static files out of so that
 # manage.py collectstatic can put them in the right place
 

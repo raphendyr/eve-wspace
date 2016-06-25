@@ -1,5 +1,9 @@
 {% extends "base.html" %}
+
+{% load staticfiles %}
+
 {% block title %} Eve W-Space: Log In {% endblock %}
+
 {%block head%} 
 	<link rel="stylesheet" type="text/css" href="{{STATIC_URL}}css/login.css" />
 {%endblock%}
@@ -29,11 +33,17 @@
 		<td colspan="2"><a href="{% url 'password_reset' %}">Forgot Password?</a></td>
 	</tr>
 		</table>
-<br />
-    <input class="btn btn-primary" type="submit" value="Log In" />
-    <a class="btn btn-info" href="{% url 'register' %}">Register</a>
-    <input type="hidden" name="next" value="{{ next }}" />
+	<br />
+	<input class="btn btn-primary" type="submit" value="Log In" />
+	<a class="btn btn-info" href="{% url 'register' %}">Register</a>
+	<input type="hidden" name="next" value="{{ next }}" />
 </form>
+
+	<p><a href="{% url 'social:begin' backend='eveonline' %}">
+        <img class='img-responsive center-block'
+            src='{% static 'images/EVE_SSO_Login_Buttons_Large_White.png' %}'
+            alt='Login with EVE Online' />
+    </a></p>
 </div>
 
 		{% endblock %}

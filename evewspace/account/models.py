@@ -12,22 +12,24 @@
 #   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
-from django.db import models
+import pytz
+import datetime
+import time
+
 from django import forms
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseUserManager, Group
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 from django.core.cache import cache
 from django.conf import settings
-from Map.models import Map, System
+from django.db import models
 from django.db.models.signals import post_save
 from django.utils import timezone
 from django.utils.http import urlquote
-from django.core.mail import send_mail
 from django.utils.translation import ugettext_lazy as _
-import pytz
-import datetime
-import time
-# Create your models here.
+from django.utils.functional import cached_property
+from django.core.mail import send_mail
+
+from Map.models import Map, System
 
 User = settings.AUTH_USER_MODEL
 
@@ -54,7 +56,7 @@ class EWSUserManager(BaseUserManager):
         return self._create_user(username, email, password, False, False,
                                  **extra_fields)
 
-    def create_superuser(self, username, email, password, **extra_fields):
+    def create_superuser(self, username, email=None, password=None, **extra_fields):
         return self._create_user(username, email, password, True, True,
                                  **extra_fields)
 
@@ -107,6 +109,34 @@ class EWSUser(AbstractBaseUser, PermissionsMixin):
         Sends an email to this User.
         """
         send_mail(subject, message, from_email, [self.email])
+
+    @cached_property
+    def _eve_auth(self):
+        """shortcut to python-social-auth's EVE-related extra data for this user"""
+        return self.social_auth.get(provider='eveonline').extra_data
+
+    def _get_crest_tokens(self):
+        """get tokens for authenticated CREST"""
+        expires_in = time.mktime(
+            dateutil.parser.parse(
+                self._eve_auth['expires']  # expiration time string
+            ).timetuple()                  # expiration timestamp
+        ) - time.time()                    # seconds until expiration
+        return {
+            'access_token': self._eve_auth['access_token'],
+            'refresh_token': self._eve_auth['refresh_token'],
+            'expires_in': expires_in
+        }
+
+    @property
+    def character_id(self):
+        """get CharacterID from authentification data"""
+        return self._eve_auth['id']
+
+    def get_portrait_url(self, size=128):
+        """returns URL to Character portrait from EVE Image Server"""
+        return "https://image.eveonline.com/Character/{0}_{1}.jpg".format(self.character_id, size)
+
 
     def update_location(self, sys_id, charid, charname, shipname, shiptype):
         """
