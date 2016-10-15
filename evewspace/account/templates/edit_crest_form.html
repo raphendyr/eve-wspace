@@ -1,0 +1,35 @@
+{% load static %}
+
+<p class="alert alert-warning">If you remove all of the tokens, you might not be able to login anymore</p>
+
+<ul class="list-group" style="list-style: none;">
+	{% for token in tokens %}
+		<li>
+			<img src="{{ token.portrait_url_32 }}" />
+			{{ token }}
+			<div class="btn-group pull-right">
+				<a class="btn btn-xs btn-danger ajax" href="{% url 'account:crest' %}?action=remove&amp;id={{token.id}}">
+					<span class="glyphicon glyphicon-trash"></span>
+					Remove
+				</a>
+			</div>
+		</li>
+	{% endfor %}
+</ul>
+
+<p class="pull-right">
+	Add more tokens with
+	<a href="{% url 'account:crest' %}?action=add&amp;next=/settings/">
+		<img
+			src='{% static 'images/EVE_SSO_Login_Buttons_Small_Black.png' %}'
+			alt='Login with EVE Online' />
+	</a>
+</p>
+
+<script type="text/javascript">
+	$('#accountCrestSettingsHolder a.ajax').on('click', function(e){
+		e.preventDefault();
+		SubmitAccountCrestSettings(this);
+		return false;
+	});
+</script>

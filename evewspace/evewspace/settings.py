@@ -188,6 +188,8 @@ INSTALLED_APPS = (
         'django.contrib.humanize',
         # 3rd party django apps
         'djcelery',
+        # 3rd party eve apps
+        'eve_sso',
         # local apps
         'core',
         'account',
@@ -208,6 +210,22 @@ TEMPLATE_CONTEXT_PROCESSORS = DEFAULT_SETTINGS.TEMPLATE_CONTEXT_PROCESSORS + (
     'core.context_processors.site',
     'eveigb.context_processors.igb',
 )
+
+AUTHENTICATION_BACKENDS = (
+    'eve_sso.backends.CrestTokenAuthenticationBackend',
+)
+
+EVE_SSO = {
+    # Create CREST application on https://developers.eveonline.com/applications
+    # Fill in values from the completed application
+    'CLIENT_ID': 'cb65bd9c66e245ffbbd06582a526232b',
+    'CLIENT_SECRET': 'T405GFqt2mPx7IpeFUnxGFHOreiFf5gfcSTd6ehv',
+    # set same callback url here and in the application form
+    # it's something like `https://mysite/evesso/callback/`
+    'CALLBACK_URL': 'http://localhost:8000/evesso/callback/',
+    # add following scopes to your application
+    'LOGIN_SCOPES': ['characterLocationRead', 'characterNavigationWrite'],
+}
 
 # ejabberd auth gateway log settings
 TUNNEL_EJABBERD_AUTH_GATEWAY_LOG = '/tmp/ejabberd.log'

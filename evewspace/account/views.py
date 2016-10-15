@@ -83,6 +83,32 @@ def edit_profile(request):
             {'form': form})
 
 
+@require_http_methods(['GET'])
+@login_required
+def edit_crest(request):
+    from eve_sso.models import AccessToken
+    from eve_sso.views import sso_redirect
+    scopes = ['characterLocationRead', 'characterNavigationWrite']
+
+    action = request.GET.get('action', 'show')
+    if action == 'add':
+        return_to = request.GET.get('next', None) or request.path
+        return sso_redirect(request, scopes=scopes, return_to=return_to)
+    elif action == 'remove':
+        token_id = request.GET.get('id', None)
+        if not token_id or not token_id.isdigit():
+            return HttpResponseBadRequest('Invalid remove operataion. Token id missing or invalid')
+        token_id = int(token_id)
+        try:
+            AccessToken.objects.get(owner=request.user, id=token_id).delete()
+        except AccessToken.DoesNotExist:
+            pass
+
+    tokens = AccessToken.objects.filter(owner=request.user).all()
+    return TemplateResponse(request, "edit_crest_form.html",
+        {'tokens': tokens})
+
+
 def password_reset_confirm(*args, **kwargs):
     from django.contrib.auth import views
     return views.password_reset_confirm(*args, post_reset_redirect=reverse('login'),

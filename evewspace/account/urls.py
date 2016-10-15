@@ -61,6 +61,7 @@ urlpatterns = [
     url(r'^register/$', views.register, name='register'),
     url(r'^password/reset/', include(passwordpatterns)),
     url(r'^profile/$', views.edit_profile, name="profile"),
+    url(r'^crest/$', views.edit_crest, name="crest"),
 
     url(r'^admin/user/$', views.user_admin),
     url(r'^admin/user/list/(?P<page_number>\d+)/$', views.user_list),

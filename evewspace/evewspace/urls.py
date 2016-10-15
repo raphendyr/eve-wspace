@@ -15,6 +15,7 @@
 from django.conf import settings
 from django.conf.urls import include, url
 
+import eve_sso.urls
 import core.views
 import account.urls
 import search.urls
@@ -28,6 +29,7 @@ import Alerts.urls
 urlpatterns = [
         url(r'^$', core.views.home_view, name='index'),
         url(r'^settings/$', core.views.config_view, name='settings'),
+        url(r'^evesso/', include(eve_sso.urls, namespace='eve_sso')),
         url(r'^account/', include(account.urls, namespace='account')),
         url(r'^search/', include(search.urls)),
         url(r'^map/', include(Map.urls)),
