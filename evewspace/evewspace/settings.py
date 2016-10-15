@@ -1,5 +1,9 @@
+import logging
+from datetime import timedelta
+from django.conf import global_settings as DEFAULT_SETTINGS
+from celery.schedules import crontab
 
-DEBUG = True
+DEBUG = False
 TEMPLATE_DEBUG = DEBUG
 MULTI_TENANT = True
 AUTH_USER_MODEL = 'account.EWSUser'
@@ -13,8 +17,6 @@ djcelery.setup_loader()
 
 BROKER_URL = 'amqp://guest:guest@localhost:5672/'
 ALLOWED_HOSTS = ['*',]
-from datetime import timedelta
-from celery.schedules import crontab
 CELERYBEAT_SCHEDULE = {
         'map_stats':{
                 'task': 'Map.tasks.update_system_stats',
@@ -184,8 +186,9 @@ INSTALLED_APPS = (
         'django.contrib.messages',
         'django.contrib.staticfiles',
         'django.contrib.humanize',
-        # Uncomment the next line to enable the admin:
-        #'django.contrib.admin',
+        # 3rd party django apps
+        'djcelery',
+        # local apps
         'core',
         'account',
         'search',
@@ -197,19 +200,16 @@ INSTALLED_APPS = (
         'Jabber',
         'Slack',
         'eveigb',
-        'djcelery',
-        # Uncomment the next line to enable admin documentation:
-        # 'django.contrib.admindocs',
 )
 #Require a registration code to register
 ACCOUNT_REQUIRE_REG_CODE=True
 
-import django.conf.global_settings as DEFAULT_SETTINGS
-TEMPLATE_CONTEXT_PROCESSORS = DEFAULT_SETTINGS.TEMPLATE_CONTEXT_PROCESSORS + ('core.context_processors.site', 'eveigb.context_processors.igb',)
+TEMPLATE_CONTEXT_PROCESSORS = DEFAULT_SETTINGS.TEMPLATE_CONTEXT_PROCESSORS + (
+    'core.context_processors.site',
+    'eveigb.context_processors.igb',
+)
+
 # ejabberd auth gateway log settings
-
-import logging
-
 TUNNEL_EJABBERD_AUTH_GATEWAY_LOG = '/tmp/ejabberd.log'
 TUNNEL_EJABBERD_AUTH_GATEWAY_LOG_LEVEL = logging.DEBUG
 
@@ -250,4 +250,8 @@ if not DEBUG:
     # when not in debug mode, add cached loader on top of template loaders
     TEMPLATE_LOADERS = (
         ('django.template.loaders.cached.Loader', TEMPLATE_LOADERS),
+    )
+else:
+    INSTALLED_APPS += (
+        'django.contrib.admin',
     )

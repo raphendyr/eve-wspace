@@ -12,22 +12,23 @@
 #   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
-from django.db import models
+import datetime
+import pytz
+import time
 from django import forms
-from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseUserManager, Group
-from django.contrib.auth.forms import UserCreationForm, UserChangeForm
-from django.core.cache import cache
 from django.conf import settings
-from Map.models import Map, System
+from django.contrib.auth.forms import UserCreationForm, UserChangeForm
+from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseUserManager, Group
+from django.core.cache import cache
+from django.core.mail import send_mail
+from django.db import models
 from django.db.models.signals import post_save
 from django.utils import timezone
+from django.utils.functional import cached_property
 from django.utils.http import urlquote
-from django.core.mail import send_mail
 from django.utils.translation import ugettext_lazy as _
-import pytz
-import datetime
-import time
-# Create your models here.
+
+from Map.models import Map
 
 User = settings.AUTH_USER_MODEL
 
@@ -54,7 +55,7 @@ class EWSUserManager(BaseUserManager):
         return self._create_user(username, email, password, False, False,
                                  **extra_fields)
 
-    def create_superuser(self, username, email, password, **extra_fields):
+    def create_superuser(self, username, email=None, password=None, **extra_fields):
         return self._create_user(username, email, password, True, True,
                                  **extra_fields)
 

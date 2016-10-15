@@ -1,61 +1,53 @@
-<!DOCTYPE HTML>
+<!DOCTYPE html>
+{% load static %}
+{% load coretags %}
 <html>
-
 	<head>
-		<title>{% block title %} Eve W-Space {% endblock %}</title>
-        <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.js"></script>
-        <script type="text/javascript" src="{{ STATIC_URL }}js/jquery-ui.js"></script>
-        <script type="text/javascript" src="{{STATIC_URL}}bootstrap/js/bootstrap.js"> </script>
-        <script type="text/javascript" src="{{ STATIC_URL }}js/bootstrap3-typeahead.js"></script>
-        <script type="text/javascript" src="{{STATIC_URL}}js/base.js"></script>
-        <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/base.css" />
-        <link rel="stylesheet" type="text/css" href="{{STATIC_URL}}bootstrap/css/bootstrap.css" />
-        {% if is_igb and not is_igb_trusted %}
-        <script type="text/javascript">
-            CCPEVE.requestTrust(window.location.protocol + '//' + window.location.host);
-        </script>
-        {% endif %}
-		{% block scripts %}{%endblock%}
-		{% block head %}{%endblock%}
+		<title>{% block title %}Eve W-Space{% endblock %}</title>
+		<script type="text/javascript" src="{% static 'js/jquery.js' %}"></script>
+		<script type="text/javascript" src="{% static 'js/jquery-ui.js' %}"></script>
+		<script type="text/javascript" src="{% static 'bootstrap/js/bootstrap.js' %}"> </script>
+		<script type="text/javascript" src="{% static 'js/bootstrap3-typeahead.js' %}"></script>
+		<script type="text/javascript" src="{% static 'js/base.js' %}"></script>
+		<link rel="stylesheet" type="text/css" href="{% static 'css/base.css' %}" />
+		<link rel="stylesheet" type="text/css" href="{% static 'bootstrap/css/bootstrap.css' %}" />
+		{% if is_igb and not is_igb_trusted %}
+			<script type="text/javascript">
+				CCPEVE.requestTrust(window.location.protocol + '//' + window.location.host);
+			</script>
+		{% endif %}
+		{% block scripts %}{% endblock %}
+		{% block head %}{% endblock %}
 	</head>
 
-    <body>
-    	<div id="wrapper" style="width: 100%; height: 100%">
-	<!-- Header block is rendered before the nav bar. Contentheader is rendered after -->
-		<!-- Divs have both class and id so that base CSS can use classes and child templates can override this with id selectors -->
+	<body>
+		<div id="wrapper" style="width: 100%; height: 100%">
+			{% comment %}
+			Header block is rendered before the nav bar. Contentheader is rendered after
+			Divs have both class and id so that base CSS can use classes and child templates can override this with id selectors
+			{% endcomment %}
 			<div id="baseHeadDiv" class="header">
-				{%block header%}{%endblock%}
+				{% block header %}{% endblock %}
 			</div>
-	
-	        <div id="baseNavDiv" class="navbar navbar-default">
-	            <div class="navbar-inner">
-	                <ul class="nav navbar-nav">
-	                    <li><a class="brand" href="{% url 'core.views.home_view' %}">Eve W-Space</a></li>
-	                    {% load coretags %}
-	                    {% nav_entries %}
-	                    {% comment %}    
-	                {% include "map_nav.html" %}
-					{% include "sitetracker_nav.html" %}
-					{% include "cart_nav.html"%}
-					{% include "alerts_nav.html" %}
-					{% include "pos_nav.html"%}
-					{% include "recruitment_nav.html" %}
-					{% include "api_nav.html" %}
-	                {% include "account_nav.html" %}
-	                {% endcomment %}
-					{%block navigation %}{%endblock%}
-	            	</ul>
-	        	</div>
+
+			<div id="baseNavDiv" class="navbar navbar-default">
+				<div class="navbar-inner">
+					<ul class="nav navbar-nav">
+						<li><a class="brand" href="{% url 'core.views.home_view' %}">Eve W-Space</a></li>
+						{% nav_entries %}
+						{% block navigation %}{% endblock %}
+					</ul>
+				</div>
 			</div>
 			<div class="container" style="width: 100%; padding: 0 15px;">
-				<div id="baseContentHeadDiv" class="contenthead">{%block contentheader %}{%endblock%}</div>
+				<div id="baseContentHeadDiv" class="contenthead">{% block contentheader %}{% endblock %}</div>
 			
 				<div id="baseContentDiv" class="content">
-		            {%block content %}{%endblock%}
+					{% block content %}{% endblock %}
 				</div>
-		        {% feedback_panel %}
+				{% feedback_panel %}
 				<div id="baseFooterDiv" class="footer">
-		            {%block footer %}{%endblock%}
+					{% block footer %}{% endblock %}
 				</div>
 				<div id="response-container" class="draggable-response-container">
 					<div id="cancelHolder"><i class="glyphicon glyphicon-remove" onclick="$('#modalHolder').parent().hide();"></i></div>
@@ -64,5 +56,4 @@
 			</div>
 		</div>
 	</body>
-
 </html>

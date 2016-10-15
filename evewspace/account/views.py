@@ -12,25 +12,26 @@
 #   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
-from account.models import RegistrationForm
-from account.utils import *
-from account.forms import EditProfileForm
-from django.contrib.auth import get_user_model
-from django.contrib.auth.models import Group
-from django.contrib.auth.decorators import permission_required
-from django.template.response import TemplateResponse
-from django.template.loader import render_to_string
-from django.http import HttpResponseRedirect, HttpResponse
-from django.core.urlresolvers import reverse
-from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-from django.core.mail import EmailMessage
-from django.conf import settings
-from django.shortcuts import get_object_or_404
-from django.forms.utils import ErrorList
-import pytz
 import datetime
+import pytz
 import time
-# Create your views here.
+from django.conf import settings
+from django.contrib.auth import get_user_model
+from django.contrib.auth.decorators import login_required, permission_required
+from django.contrib.auth.models import Group
+from django.core.mail import EmailMessage
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.core.urlresolvers import reverse
+from django.forms.utils import ErrorList
+from django.http import HttpResponseBadRequest, HttpResponseRedirect, HttpResponse
+from django.shortcuts import get_object_or_404
+from django.template.loader import render_to_string
+from django.template.response import TemplateResponse
+from django.views.decorators.http import require_http_methods
+
+from .forms import EditProfileForm
+from .models import RegistrationForm
+from .utils import get_groups_for_code, register_groups
 
 User = get_user_model()
 
@@ -62,6 +63,7 @@ def register(request):
     return TemplateResponse(request, "register.html", context)
 
 
+@login_required
 def edit_profile(request):
     if request.method == "POST":
         form = EditProfileForm(request.POST)

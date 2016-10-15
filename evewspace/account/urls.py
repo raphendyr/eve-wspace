@@ -13,49 +13,61 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 from django.conf.urls import patterns, include, url
+from django.contrib.auth import views as auth_views
 
-userpatterns = patterns('account.views',
-        url(r'^$', 'user_edit'),
-        url(r'^profile/$', 'profile_admin'),
-        url(r'^delete/$', 'delete_user'),
-        url(r'^groups/$', 'user_group_list'),
-        )
+from . import views
 
-grouppatterns = patterns('account.views',
-        url(r'^$', 'group_edit'),
-        url(r'^profile/$', 'group_profile_admin'),
-        url(r'^delete/$', 'delete_group'),
-        url(r'^disableusers/$', 'disable_group_users'),
-        url(r'^enableusers/$', 'enable_group_users'),
-        url(r'^user/(?P<user_id>\d+)/add/$', 'add_group_user'),
-        url(r'^user/(?P<user_id>\d+)/remove/$', 'remove_user'),
-        url(r'^permissions/$', 'permissions'),
-		)
+userpatterns = [
+    url(r'^$', views.user_edit),
+    url(r'^profile/$', views.profile_admin),
+    url(r'^delete/$', views.delete_user),
+    url(r'^groups/$', views.user_group_list),
+]
 
+grouppatterns = [
+    url(r'^$', views.group_edit),
+    url(r'^profile/$', views.group_profile_admin),
+    url(r'^delete/$', views.delete_group),
+    url(r'^disableusers/$', views.disable_group_users),
+    url(r'^enableusers/$', views.enable_group_users),
+    url(r'^user/(?P<user_id>\d+)/add/$', views.add_group_user),
+    url(r'^user/(?P<user_id>\d+)/remove/$', views.remove_user),
+    url(r'^permissions/$', views.permissions),
+]
 
-urlpatterns = patterns('',
-    url(r'^login/$', 'django.contrib.auth.views.login',
-        {'template_name': 'login.html'}, name='login'),
-    url(r'^logout/$', 'django.contrib.auth.views.logout_then_login'),
-    url(r'^register/$', 'account.views.register', name='register'),
-    url(r'^profile/$', 'account.views.edit_profile'),
-    url(r'^admin/user/$', 'account.views.user_admin'),
-    url(r'^admin/user/list/(?P<page_number>\d+)/$',
-        'account.views.user_list'),
-    url(r'^admin/group/$', 'account.views.group_admin'),
-    url(r'^admin/group/new/$', 'account.views.create_group'),
-    url(r'^admin/group/list/(?P<page_number>\d+)/$',
-        'account.views.group_list'),
-    url(r'^admin/user/new/$', 'account.views.new_user'),
+passwordpatterns = [
+    url(r'^$',
+        auth_views.password_reset, name='password_reset',
+        kwargs={'template_name': 'password_reset.html',
+                'email_template_name': 'password_reset_email.html',
+                'subject_template_name': 'reset_subject.txt',
+                'post_reset_redirect': 'account:password_reset_done'}),
+    url(r'^done/$',
+        auth_views.password_reset_done, name='password_reset_done',
+        kwargs={'template_name': 'password_reset_done.html'}),
+    url(r'^(?P<uidb64>[0-9A-Za-z]+)-(?P<token>.+)',
+        views.password_reset_confirm, name='password_reset_confirm',
+        kwargs={'template_name': 'password_reset_confirm.html',
+                'post_reset_redirect': 'account:password_reset_complete'}),
+    url(r'^complete/$',
+        auth_views.password_reset_complete, name='password_reset_complete',
+        kwargs={'template_name': 'password_reset_complete.html'}),
+]
+
+urlpatterns = [
+    url(r'^login/$', auth_views.login, name='login',
+        kwargs={'template_name': 'login.html'}),
+    url(r'^logout/$', auth_views.logout_then_login, name='logout'),
+    url(r'^register/$', views.register, name='register'),
+    url(r'^password/reset/', include(passwordpatterns)),
+    url(r'^profile/$', views.edit_profile, name="profile"),
+
+    url(r'^admin/user/$', views.user_admin),
+    url(r'^admin/user/list/(?P<page_number>\d+)/$', views.user_list),
+    url(r'^admin/group/$', views.group_admin),
+    url(r'^admin/group/new/$', views.create_group),
+    url(r'^admin/group/list/(?P<page_number>\d+)/$', views.group_list),
+    url(r'^admin/user/new/$', views.new_user),
     url(r'^admin/user/(?P<user_id>\d+)/', include(userpatterns)),
     url(r'^admin/group/(?P<group_id>\d+)/', include(grouppatterns)),
-    url(r'^password/reset$', 'django.contrib.auth.views.password_reset',
-        {'template_name': 'password_reset.html',
-         'email_template_name': 'password_reset_email.html',
-         'subject_template_name': 'reset_subject.txt'}, name='password_reset'),
-    url(r'^password/reset/done$', 'django.contrib.auth.views.password_reset_done',
-        {'template_name': 'password_reset_done.html'}, name='password_reset_done'),
-    url(r'^password/reset/(?P<uidb64>[0-9A-Za-z]+)-(?P<token>.+)',
-        'account.views.password_reset_confirm',
-        name='password_reset_confirm'),
-)
+]

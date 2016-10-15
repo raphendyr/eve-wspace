@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %} Eve W-Space: Log In {% endblock %}
+
+{% block head %}
+	<link rel="stylesheet" type="text/css" href="{% static 'css/login.css' %}" />
+{% endblock %}
+
+{% block contentheader %}
+	<img src="{% static 'images/webtitle.png' %}" alt="Welcome to Eve W-Space!">
+{% endblock %}
+
+{% block content %}
+	<div class="logInBox">
+		{% block loginbox %} {% endblock %}
+	</div>
+{% endblock %}

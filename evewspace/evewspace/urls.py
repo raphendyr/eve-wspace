@@ -12,25 +12,34 @@
 #   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
-from django.conf.urls import patterns, include, url
+from django.conf import settings
+from django.conf.urls import include, url
 
-# Uncomment to enable django admin
-#from django.contrib import admin
-#admin.autodiscover()
+import core.views
+import account.urls
+import search.urls
+import Map.urls
+import POS.urls
+import SiteTracker.urls
+import API.urls
+import Alerts.urls
 
 # Actual URL definitions
-urlpatterns = patterns('',
-        # Uncomment the admin/doc line below to enable admin documentation:
-        # url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
-        url(r'^$', 'core.views.home_view', name='index'),
-        # Uncommend to enable django admin
-        #url(r'^admin/', include(admin.site.urls)),
-        url(r'^settings/$', 'core.views.config_view', name='settings'),
-        url(r'^account/', include('account.urls')),
-        url(r'^map/', include('Map.urls')),
-        url(r'^search/', include('search.urls')),
-        url(r'^pos/', include('POS.urls')),
-        url(r'^sitetracker/', include('SiteTracker.urls')),
-        url(r'^alerts/', include('Alerts.urls')),
-        url(r'^api/', include('API.urls')),
-)
+urlpatterns = [
+        url(r'^$', core.views.home_view, name='index'),
+        url(r'^settings/$', core.views.config_view, name='settings'),
+        url(r'^account/', include(account.urls, namespace='account')),
+        url(r'^search/', include(search.urls)),
+        url(r'^map/', include(Map.urls)),
+        url(r'^pos/', include(POS.urls)),
+        url(r'^sitetracker/', include(SiteTracker.urls)),
+        url(r'^api/', include(API.urls)),
+        url(r'^alerts/', include(Alerts.urls)),
+]
+
+if settings.DEBUG:
+    from django.contrib import admin
+    admin.autodiscover()
+    urlpatterns += [
+        url(r'^admin/', include(admin.site.urls)),
+    ]

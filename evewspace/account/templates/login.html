@@ -1,39 +1,31 @@
-{% extends "base.html" %}
-{% block title %} Eve W-Space: Log In {% endblock %}
-{%block head%} 
-	<link rel="stylesheet" type="text/css" href="{{STATIC_URL}}css/login.css" />
-{%endblock%}
+{% extends "login_base.html" %}
+{% load static %}
 
-{%block contentheader %}
-	<img src="{{STATIC_URL}}images/webtitle.png" alt="Welcome to Eve W-Space!">
-{%endblock%}
+{% block title %}{{block.super}}: Log In{% endblock %}
 
-{% block content %}
+{% block loginbox %}
+	{% if form.errors %}
+		<p class="alert alert-warning">Your username and password didn't match. Please try again.</p>
+	{% endif %}
 
-{% if form.errors %}
-<p>Your username and password didn't match. Please try again.</p>
-{% endif %}
-<div class="logInBox">
-<form method="post" class="form-group" action="{% url 'django.contrib.auth.views.login' %}">
-{% csrf_token %}
-<table>
-<tr>
-    <td>{{ form.username.label_tag }}&nbsp;</td>
-        <td><input class="form-control input-sm input-margin" id="id_username" maxlength="254" name="username" type="text"></td>
-	</tr>
-	<tr>
-	    <td>{{ form.password.label_tag }}&nbsp;</td>
-	        <td><input class="form-control input-sm" id="id_password" name="password" type="password"></td>
-		</tr>
-	<tr>
-		<td colspan="2"><a href="{% url 'password_reset' %}">Forgot Password?</a></td>
-	</tr>
+	<form method="post" class="form-group" action="{% url 'account:login' %}">
+		{% csrf_token %}
+		<table>
+			<tr>
+				<td>{{ form.username.label_tag }}&nbsp;</td>
+				<td><input class="form-control input-sm input-margin" id="id_username" maxlength="254" name="username" type="text"></td>
+			</tr>
+			<tr>
+				<td>{{ form.password.label_tag }}&nbsp;</td>
+				<td><input class="form-control input-sm input-margin" id="id_password" name="password" type="password"></td>
+			</tr>
+			<tr>
+				<td colspan="2"><a href="{% url 'account:password_reset' %}">Forgot Password?</a></td>
+			</tr>
 		</table>
-<br />
-    <input class="btn btn-primary" type="submit" value="Log In" />
-    <a class="btn btn-info" href="{% url 'register' %}">Register</a>
-    <input type="hidden" name="next" value="{{ next }}" />
-</form>
-</div>
-
-		{% endblock %}
+		<br />
+		<input class="btn btn-primary" type="submit" value="Log In" />
+		<a class="btn btn-info" href="{% url 'account:register' %}">Register</a>
+		<input type="hidden" name="next" value="{{ next }}" />
+	</form>
+{% endblock %}
