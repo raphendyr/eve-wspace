@@ -3,16 +3,26 @@
 <p class="alert alert-warning">If you remove all of the tokens, you might not be able to login anymore</p>
 
 <ul class="list-group" style="list-style: none;">
-	{% for token in tokens %}
+	{% for char_id, tokens in characters %}
 		<li>
-			<img src="{{ token.portrait_url_32 }}" />
-			{{ token }}
+			<img src="{{ tokens.0.character_portrait.32 }}" />
+			{{ tokens.0.character_name }}
 			<div class="btn-group pull-right">
-				<a class="btn btn-xs btn-danger ajax" href="{% url 'account:crest' %}?action=remove&amp;id={{token.id}}">
+				<a class="btn btn-xs btn-danger ajax" href="{% url 'account:crest' %}?action=remove&amp;id={{char_id}}">
 					<span class="glyphicon glyphicon-trash"></span>
 					Remove
 				</a>
 			</div>
+			<ul>
+				{% for token in tokens %}
+					<li>
+						{{ token }}
+						{% if not token.valid %}
+							<span class="label label-danger">invalid</span>
+						{% endif %}
+					</li>
+				{% endfor %}
+			</ul>
 		</li>
 	{% endfor %}
 </ul>

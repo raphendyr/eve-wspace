@@ -224,35 +224,80 @@ EVE_SSO = {
     # it's something like `https://mysite/evesso/callback/`
     'CALLBACK_URL': 'http://localhost:8000/evesso/callback/',
     # add following scopes to your application
-    'LOGIN_SCOPES': ['characterLocationRead', 'characterNavigationWrite'],
+    #'LOGIN_SCOPES': ['characterLocationRead', 'characterNavigationWrite'],
+}
+
+LOCATION_AGENT = {
 }
 
 # ejabberd auth gateway log settings
 TUNNEL_EJABBERD_AUTH_GATEWAY_LOG = '/tmp/ejabberd.log'
 TUNNEL_EJABBERD_AUTH_GATEWAY_LOG_LEVEL = logging.DEBUG
 
-# A sample logging configuration. The only tangible logging
-# performed by this configuration is to send an email to
-# the site admins on every HTTP 500 error.
-# See http://docs.djangoproject.com/en/dev/topics/logging for
-# more details on how to customize your logging configuration.
+
+# Logging
+# https://docs.djangoproject.com/en/1.8/topics/logging/
+# - As default, log to stdout with INFO level
+# - Email admins on every HTTP 500 error
 LOGGING = {
-        'version': 1,
-        'disable_existing_loggers': False,
-        'handlers': {
-                'mail_admins': {
-                        'level': 'ERROR',
-                        'class': 'django.utils.log.AdminEmailHandler'
-                }
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '[%(asctime)s: %(levelname)s/%(module)s] %(message)s',
         },
-        'loggers': {
-                'django.request': {
-                        'handlers': ['mail_admins'],
-                        'level': 'ERROR',
-                        'propagate': True,
-                },
+        'colored': {
+            '()': 'django_sourcecolorizeformatter.SourceColorizeFormatter',
+            'format': '[%(asctime)s: %(levelname)8s %(name)s] %(message)s',
+            'colors': {
+                'django.db.backends': {'fg': 'cyan'},
+                'eve_sso': {'fg': 'red', 'opts': ('bold',)},
+            },
+        },
+    },
+    'filters': {
+        'require_debug_true': {
+            '()': 'django.utils.log.RequireDebugTrue',
         }
+    },
+    'handlers': {
+        'debug_console': {
+            'level': 'DEBUG',
+            'filters': ['require_debug_true'],
+            'class': 'logging.StreamHandler',
+            'stream': 'ext://sys.stdout',
+            'formatter': 'colored',
+        },
+        'console': {
+            'level': 'INFO',
+            'class': 'logging.StreamHandler',
+            'stream': 'ext://sys.stdout',
+            'formatter': 'verbose',
+        },
+        'mail': {
+            'level': 'ERROR',
+            'class': 'django.utils.log.AdminEmailHandler',
+        },
+    },
+    'loggers': {
+        '': {
+            'level': 'INFO',
+            'handlers': ['console'],
+            'propagate': True,
+        },
+        'django.request': {
+            'handlers': ['mail'],
+            'level': 'ERROR',
+        },
+        'requests': {
+            'level': 'WARNING',
+        },
+        'requests.packages.urllib3': {
+            'level': 'WARNING',
+        },
+    },
 }
+
 
 # Dirty hack to provide configuration overriding semantics. Use local_settings to override or add upon the default.
 try:

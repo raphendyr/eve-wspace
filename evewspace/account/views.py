@@ -95,18 +95,17 @@ def edit_crest(request):
         return_to = request.GET.get('next', None) or request.path
         return sso_redirect(request, scopes=scopes, return_to=return_to)
     elif action == 'remove':
-        token_id = request.GET.get('id', None)
-        if not token_id or not token_id.isdigit():
-            return HttpResponseBadRequest('Invalid remove operataion. Token id missing or invalid')
-        token_id = int(token_id)
-        try:
-            AccessToken.objects.get(owner=request.user, id=token_id).delete()
-        except AccessToken.DoesNotExist:
-            pass
+        char_id = request.GET.get('id', None)
+        if not char_id or not char_id.isdigit():
+            return HttpResponseBadRequest('Invalid remove operataion. Character id missing or invalid')
+        char_id = int(char_id)
+        AccessToken.objects.get(owner=request.user, character_id=char_id).delete()
 
-    tokens = AccessToken.objects.filter(owner=request.user).all()
+    characters = {}
+    for token in AccessToken.objects.filter(owner=request.user).all():
+        characters.setdefault(token.character_id, []).append(token)
     return TemplateResponse(request, "edit_crest_form.html",
-        {'tokens': tokens})
+        {'characters': sorted(characters.items())})
 
 
 def password_reset_confirm(*args, **kwargs):
